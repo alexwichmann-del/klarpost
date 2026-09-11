@@ -16,7 +16,7 @@ integration. The reference CLI evaluates **synthetic fixtures only**.
 ## What it is
 
 - Human-readable **YAML policy packs** (`policies/packs/`)
-- A fixed action ladder: **Ablegen / Belege → archive → keep → delete-candidate**
+- A fixed action ladder: **file (`ablegen`) → archive → keep → delete-candidate**
 - **Hard safety rails** in the engine: orders, invoices, receipts, tickets,
   banking, and security mail cannot become delete-candidates — even if a pack
   is sloppy
@@ -36,10 +36,10 @@ integration. The reference CLI evaluates **synthetic fixtures only**.
 
 Inbox tools optimized for "less mail" quietly fail people with ADHD or high
 sensory load: the cost of a wrong delete is higher than the cost of a full
-inbox. klarpost starts from the opposite default — **protect Belege first**,
+inbox. klarpost starts from the opposite default — **protect receipts first**,
 then offer calmer archive / delete-candidate rules you can see.
 
-If two rules collide (order confirmation + "20% off"), Ablegen wins.
+If two rules collide (order confirmation + "20% off"), file (`ablegen`) wins.
 
 ## Quick start
 
@@ -68,14 +68,14 @@ A rule is a few lines of YAML a tired human can audit:
     subject_contains: [invoice, receipt, rechnung, beleg]
   classify: invoice
   action: ablegen
-  reason: Belege first — invoices and receipts stay.
+  reason: Receipts first — invoices stay.
 ```
 
 ## Actions
 
 | Action | Meaning |
 | --- | --- |
-| `ablegen` | File / keep the paper trail (Belege). Highest priority. |
+| `ablegen` | File / keep the paper trail (receipts, invoices, tickets). Highest priority. |
 | `archive` | Leave the inbox, keep the message. |
 | `keep` | Stay put. Used when nothing reliable matched. |
 | `delete_candidate` | Suggestion only. Never executed by this engine. |
@@ -98,9 +98,9 @@ fails if any row is `delete_candidate`.
 
 | Pack | Intent |
 | --- | --- |
-| [`policies/packs/protected-only.yaml`](policies/packs/protected-only.yaml) | Only Ablegen rules. Everything else stays `keep`. |
-| [`policies/packs/receipts-first.yaml`](policies/packs/receipts-first.yaml) | Ablegen + archive newsletters. No delete-candidates. |
-| [`policies/packs/inbox-calm.yaml`](policies/packs/inbox-calm.yaml) | Ablegen + archive + obvious promo delete-candidates. |
+| [`policies/packs/protected-only.yaml`](policies/packs/protected-only.yaml) | File-only rules. Everything else stays `keep`. |
+| [`policies/packs/receipts-first.yaml`](policies/packs/receipts-first.yaml) | File receipts + archive newsletters. No delete-candidates. |
+| [`policies/packs/inbox-calm.yaml`](policies/packs/inbox-calm.yaml) | File + archive + obvious promo delete-candidates. |
 
 Write a pack: [policies/README.md](policies/README.md).
 
@@ -114,6 +114,9 @@ ruff check src tests
 Safety tests live in `tests/test_safety.py`. If you add a `delete_candidate`
 rule, add a fixture that proves it does **not** collide with protected
 signals.
+
+Docs, issues, and comments are **English first** (OpenAI / US reviewers).
+Matcher keywords may still include other locales.
 
 ## Deutsch (kurz)
 
@@ -133,7 +136,7 @@ an issue first.
 1. **Locale pack (DE newsletter phrases)** — add `policies/packs/inbox-calm.de.yaml`
    plus 3–5 fixtures. Must still pass `protected_must_keep.json`.
 2. **Calendar-invite fixture** — a synthetic `.ics` / "invitation" message and
-   a rule that *keeps* or Ablegen it (never delete-candidate).
+   a rule that *keeps* or files it (never delete-candidate).
 3. **Safer promo phrases** — extend `inbox-calm` delete-candidate matchers
    with more obvious marketing copy, each backed by a fixture that has **no**
    protected keywords.

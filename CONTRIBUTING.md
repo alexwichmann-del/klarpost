@@ -13,6 +13,9 @@ beat large rewrites.
 3. **Safety rails are not optional.** Do not weaken `HARD_PROTECTED_CATEGORIES`
    or skip `tests/test_safety.py` to make a pack "more aggressive".
 4. **`delete_candidate` is not delete.** Copy and tests should say so.
+5. **English first.** User-facing docs, issue/PR text, CLI help, rule
+   `reason` strings, and comments are English. Matcher keywords may include
+   other locales. A short optional German README section is welcome.
 
 ## Dev setup
 

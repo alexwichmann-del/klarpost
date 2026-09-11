@@ -14,6 +14,10 @@ work is reviewing YAML packs and safety tests — not connecting a mailbox.
    never `delete_candidate`.
 3. The reference CLI stays **fixtures-only**. No IMAP, SMTP, OAuth, tokens,
    or personal mail samples.
+4. **English first.** README, CONTRIBUTING, issues, PR text, CLI help,
+   rule `reason` strings, and code comments are written in English.
+   Matcher keywords may include other locales (e.g. `rechnung`). A short
+   optional German section at the end of the README is fine.
 
 ## What you may do
 
@@ -48,8 +52,8 @@ Then read the diff as a safety review:
 
 1. **Schema** — `version: 1`, unique rule ids, non-empty `match`, human
    `reason` strings.
-2. **Ladder** — Ablegen beats archive beats keep beats delete-candidate.
-   A colliding order+promo rule must still Ablegen.
+2. **Ladder** — file (`ablegen`) beats archive beats keep beats
+   delete-candidate. A colliding order+promo rule must still file.
 3. **Protected fixture** — zero `delete_candidate` rows on
    `fixtures/protected_must_keep.json`.
 4. **New delete rules** — each one has a *clean* promo fixture (no invoice /

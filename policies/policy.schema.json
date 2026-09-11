@@ -1,7 +1,7 @@
 {
   "$defs": {
     "Action": {
-      "description": "What to do with a message. Priority is Ablegen > archive > keep > delete-candidate.",
+      "description": "What to do with a message. Priority is file (ablegen) > archive > keep > delete-candidate.",
       "enum": [
         "ablegen",
         "archive",

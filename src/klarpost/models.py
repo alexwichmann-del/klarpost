@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Action(StrEnum):
-    """What to do with a message. Priority is Ablegen > archive > keep > delete-candidate."""
+    """What to do with a message. Priority is file (ablegen) > archive > keep > delete-candidate."""
 
     ABLEGEN = "ablegen"
     ARCHIVE = "archive"

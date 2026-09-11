@@ -107,7 +107,7 @@ def test_protected_fixture_file_has_zero_delete_candidates(inbox_calm, protected
     deleted = [item.message_id for item in results if item.action is Action.DELETE_CANDIDATE]
     assert deleted == []
     assert all(item.action in {Action.ABLEGEN, Action.KEEP, Action.ARCHIVE} for item in results)
-    # paper-trail fixtures should prefer Ablegen
+    # paper-trail fixtures should prefer file (ablegen)
     ablegen = {item.message_id for item in results if item.action is Action.ABLEGEN}
     assert "keep-invoice" in ablegen
     assert "keep-order-with-sale-language" in ablegen

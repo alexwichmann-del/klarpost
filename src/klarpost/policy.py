@@ -71,7 +71,7 @@ def validate_policy(pack: PolicyPack, *, source: str = "<memory>") -> None:
         if rule.action is Action.DELETE_CANDIDATE and rule.classify in protected:
             raise PolicyError(
                 f"{source}: rule {rule.id!r} classifies {rule.classify!r} as "
-                "delete_candidate — protected categories may only Ablegen, archive, or keep"
+                "delete_candidate — protected categories may only file, archive, or keep"
             )
 
 

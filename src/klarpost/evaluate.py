@@ -153,7 +153,7 @@ def _reasons(
         )
     elif overridden:
         reasons.append(
-            "HARD SAFETY VETO: a delete_candidate rule matched protected mail; Ablegen/keep wins"
+            "HARD SAFETY VETO: a delete_candidate rule matched protected mail; file/keep wins"
         )
     if not rule_hits and not safety_hits:
         reasons.append("no rule matched; default keep (do not guess-delete)")
