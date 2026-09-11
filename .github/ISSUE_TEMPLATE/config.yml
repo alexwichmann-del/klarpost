@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Policy pack authoring
+    url: https://github.com/alexwichmann-del/klarpost/blob/main/policies/README.md
+    about: How to write a YAML pack without weakening safety rails
+  - name: Maintainer / Codex workflow
+    url: https://github.com/alexwichmann-del/klarpost/blob/main/AGENTS.md
+    about: Review checklist for policy PRs and issue triage

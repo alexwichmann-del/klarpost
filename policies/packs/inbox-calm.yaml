@@ -1,0 +1,120 @@
+version: 1
+id: inbox-calm
+name: Inbox calm
+description: >
+  ADHD / high-sensory pack. Keep the paper trail, archive List-Unsubscribe
+  newsletters, and mark only obvious promo noise (without a list header) as
+  delete-candidates. Archive still beats delete. Protected categories still
+  win. You decide what actually gets deleted.
+locale: en
+safety:
+  never_delete_categories:
+    - order
+    - invoice
+    - receipt
+    - ticket
+    - travel
+    - banking
+    - security
+    - government
+    - medical
+    - legal
+    - identity
+  require_human_review_for_delete: true
+  default_action: keep
+rules:
+  - id: ablegen-invoices
+    priority: 90
+    match:
+      subject_contains: [invoice, receipt, rechnung, beleg, quittung]
+    classify: invoice
+    action: ablegen
+    reason: Belege first — invoices and receipts stay.
+
+  - id: ablegen-orders
+    priority: 85
+    match:
+      subject_contains:
+        - order confirmation
+        - your order
+        - bestellbestätigung
+        - shipping confirmation
+        - tracking number
+    classify: order
+    action: ablegen
+    reason: Orders are receipts in disguise.
+
+  - id: ablegen-tickets
+    priority: 85
+    match:
+      subject_contains:
+        - boarding pass
+        - e-ticket
+        - itinerary
+        - reservation
+        - buchungsbestätigung
+        - fahrkarte
+    classify: ticket
+    action: ablegen
+    reason: Travel tickets are irreplaceable at the gate.
+
+  - id: ablegen-banking
+    priority: 95
+    match:
+      subject_contains:
+        - account statement
+        - kontoauszug
+        - sepa
+        - lastschrift
+        - payment received
+        - überweisung
+    classify: banking
+    action: ablegen
+    reason: Banking records stay.
+
+  - id: ablegen-security
+    priority: 100
+    match:
+      subject_contains:
+        - security alert
+        - verification code
+        - password reset
+        - passwort zurücksetzen
+        - new sign-in
+        - suspicious login
+        - 2fa
+    classify: security
+    action: ablegen
+    reason: Security mail is never a delete-candidate.
+
+  - id: archive-newsletters
+    priority: 30
+    match:
+      has_list_unsubscribe: true
+    classify: newsletter
+    action: archive
+    reason: Newsletters leave the inbox but stay searchable.
+
+  - id: archive-weekly-digest
+    priority: 25
+    match:
+      subject_contains: [weekly digest, weekly roundup, wochenschau]
+    classify: newsletter
+    action: archive
+    reason: Recurring digests are low-urgency reading.
+
+  - id: delete-percent-off
+    priority: 10
+    match:
+      subject_contains: ["% off", "flash sale", "% rabatt", "bis zu"]
+    classify: promo
+    action: delete_candidate
+    reason: Obvious discount noise — candidate only, human still decides.
+
+  - id: delete-clearance
+    priority: 10
+    match:
+      subject_contains: [clearance, last chance, don't miss, nur heute]
+    classify: promo
+    action: delete_candidate
+    reason: Urgency-marketing copy, not a receipt.

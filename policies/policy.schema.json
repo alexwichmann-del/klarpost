@@ -1,0 +1,216 @@
+{
+  "$defs": {
+    "Action": {
+      "description": "What to do with a message. Priority is Ablegen > archive > keep > delete-candidate.",
+      "enum": [
+        "ablegen",
+        "archive",
+        "keep",
+        "delete_candidate"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "MatchSpec": {
+      "additionalProperties": false,
+      "description": "Matchers that fire on fixture metadata only (no live mailbox).",
+      "properties": {
+        "subject_contains": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Subject Contains",
+          "type": "array"
+        },
+        "subject_regex": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Subject Regex",
+          "type": "array"
+        },
+        "from_contains": {
+          "items": {
+            "type": "string"
+          },
+          "title": "From Contains",
+          "type": "array"
+        },
+        "from_domain_in": {
+          "items": {
+            "type": "string"
+          },
+          "title": "From Domain In",
+          "type": "array"
+        },
+        "body_contains": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Body Contains",
+          "type": "array"
+        },
+        "has_list_unsubscribe": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Has List Unsubscribe"
+        },
+        "has_attachment": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Has Attachment"
+        }
+      },
+      "title": "MatchSpec",
+      "type": "object"
+    },
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "priority": {
+          "default": 0,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "match": {
+          "$ref": "#/$defs/MatchSpec"
+        },
+        "match_mode": {
+          "default": "any_field",
+          "enum": [
+            "any_field",
+            "all_fields"
+          ],
+          "title": "Match Mode",
+          "type": "string"
+        },
+        "classify": {
+          "maxLength": 40,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Classify",
+          "type": "string"
+        },
+        "action": {
+          "$ref": "#/$defs/Action"
+        },
+        "reason": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "match",
+        "classify",
+        "action",
+        "reason"
+      ],
+      "title": "Rule",
+      "type": "object"
+    },
+    "SafetyConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "never_delete_categories": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Never Delete Categories",
+          "type": "array"
+        },
+        "require_human_review_for_delete": {
+          "default": true,
+          "title": "Require Human Review For Delete",
+          "type": "boolean"
+        },
+        "default_action": {
+          "$ref": "#/$defs/Action",
+          "default": "keep"
+        }
+      },
+      "title": "SafetyConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Human-readable email hygiene policy. Hard safety rails in the engine still block delete-candidates on orders, invoices, tickets, banking, and security mail even if a pack is incomplete.",
+  "properties": {
+    "version": {
+      "const": 1,
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "locale": {
+      "default": "en",
+      "title": "Locale",
+      "type": "string"
+    },
+    "safety": {
+      "$ref": "#/$defs/SafetyConfig"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/Rule"
+      },
+      "title": "Rules",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "description"
+  ],
+  "title": "klarpost policy pack",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

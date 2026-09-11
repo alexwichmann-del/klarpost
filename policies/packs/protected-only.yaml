@@ -1,0 +1,63 @@
+version: 1
+id: protected-only
+name: Protected only
+description: >
+  Smallest useful pack: only Ablegen rules for paper-trail and security mail.
+  Everything else stays in the inbox (keep). Use this when you want zero
+  delete-candidates until you trust a calmer pack.
+locale: en
+safety:
+  never_delete_categories:
+    - order
+    - invoice
+    - receipt
+    - ticket
+    - travel
+    - banking
+    - security
+    - government
+    - medical
+    - legal
+    - identity
+  require_human_review_for_delete: true
+  default_action: keep
+rules:
+  - id: ablegen-invoices
+    priority: 90
+    match:
+      subject_contains: [invoice, receipt, rechnung, beleg]
+    classify: invoice
+    action: ablegen
+    reason: File invoices.
+
+  - id: ablegen-orders
+    priority: 85
+    match:
+      subject_contains: [order confirmation, your order, bestellbestätigung]
+    classify: order
+    action: ablegen
+    reason: File orders.
+
+  - id: ablegen-tickets
+    priority: 85
+    match:
+      subject_contains: [boarding pass, e-ticket, reservation, buchungsbestätigung]
+    classify: ticket
+    action: ablegen
+    reason: File tickets.
+
+  - id: ablegen-banking
+    priority: 95
+    match:
+      subject_contains: [kontoauszug, account statement, sepa, lastschrift]
+    classify: banking
+    action: ablegen
+    reason: File banking mail.
+
+  - id: ablegen-security
+    priority: 100
+    match:
+      subject_contains: [security alert, verification code, password reset, 2fa]
+    classify: security
+    action: ablegen
+    reason: File security mail.

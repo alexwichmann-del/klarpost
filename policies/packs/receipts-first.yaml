@@ -1,0 +1,99 @@
+version: 1
+id: receipts-first
+name: Receipts first
+description: >
+  Conservative starter pack. Ablegen (file) orders, invoices, tickets, banking,
+  and security mail. Archive obvious newsletters. Do not propose deletes.
+  Built for a high-sensory inbox: fewer decisions, visible paper trail.
+locale: en
+safety:
+  never_delete_categories:
+    - order
+    - invoice
+    - receipt
+    - ticket
+    - travel
+    - banking
+    - security
+    - government
+    - medical
+    - legal
+    - identity
+  require_human_review_for_delete: true
+  default_action: keep
+rules:
+  - id: ablegen-invoices
+    priority: 90
+    match:
+      subject_contains:
+        - invoice
+        - receipt
+        - rechnung
+        - beleg
+        - quittung
+    classify: invoice
+    action: ablegen
+    reason: Invoices and receipts are Belege — file them, never delete.
+
+  - id: ablegen-orders
+    priority: 85
+    match:
+      subject_contains:
+        - order confirmation
+        - your order
+        - bestellbestätigung
+        - shipping confirmation
+        - tracking number
+    classify: order
+    action: ablegen
+    reason: Order and shipping mail is a purchase record.
+
+  - id: ablegen-tickets
+    priority: 85
+    match:
+      subject_contains:
+        - boarding pass
+        - e-ticket
+        - itinerary
+        - reservation
+        - buchungsbestätigung
+        - fahrkarte
+    classify: ticket
+    action: ablegen
+    reason: Tickets and bookings are time-sensitive and hard to replace.
+
+  - id: ablegen-banking
+    priority: 95
+    match:
+      subject_contains:
+        - account statement
+        - kontoauszug
+        - sepa
+        - lastschrift
+        - payment received
+        - überweisung
+    classify: banking
+    action: ablegen
+    reason: Banking mail is a legal/financial record.
+
+  - id: ablegen-security
+    priority: 100
+    match:
+      subject_contains:
+        - security alert
+        - verification code
+        - password reset
+        - passwort zurücksetzen
+        - new sign-in
+        - 2fa
+    classify: security
+    action: ablegen
+    reason: Security mail is never promotional noise.
+
+  - id: archive-newsletters
+    priority: 20
+    match:
+      has_list_unsubscribe: true
+    classify: newsletter
+    action: archive
+    reason: List-Unsubscribe usually means a newsletter you can leave the inbox.
