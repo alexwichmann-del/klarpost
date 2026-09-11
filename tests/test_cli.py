@@ -59,9 +59,15 @@ def test_explain_one_message(capsys):
         ]
     )
     assert code == 0
-    payload = json.loads(capsys.readouterr().out)
+    out = capsys.readouterr().out
+    prose, _, json_body = out.partition("{")
+    json_body = "{" + json_body
+    payload = json.loads(json_body)
     assert payload["action"] == "ablegen"
     assert payload["safety_veto"] is True
+    lowered = prose.lower()
+    assert "ablegen" in lowered or "file" in lowered
+    assert "veto" in lowered or "safety" in lowered
 
 
 def test_missing_message_id(capsys):

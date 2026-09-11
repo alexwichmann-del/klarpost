@@ -138,8 +138,32 @@ def _cmd_explain(args: argparse.Namespace) -> int:
         print(f"error: no fixture with id {args.message_id!r}", file=sys.stderr)
         return 1
     result = evaluate_messages([match], pack)[0]
+    print(_explain_prose(result))
     print(json.dumps(result.as_dict(), indent=2, ensure_ascii=True))
     return 0
+
+
+def _explain_prose(result: Evaluation) -> str:
+    """One English paragraph so a human can read the decision without JSON."""
+    category = result.category.replace("_", " ")
+    if result.action.value == "ablegen":
+        action_bit = "File (ablegen) wins"
+    elif result.action.value == "keep":
+        action_bit = "Keep it"
+    elif result.action.value == "archive":
+        action_bit = "Archive it"
+    else:
+        action_bit = "Delete is a candidate only"
+
+    if result.safety_veto:
+        veto_bit = "delete is vetoed by a safety rail"
+    else:
+        veto_bit = "no safety veto applied"
+
+    return (
+        f"This looks like {category} mail that also matched other policy rules. "
+        f"{action_bit}; {veto_bit}."
+    )
 
 
 def _print_table(results: list[Evaluation]) -> None:
