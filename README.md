@@ -1,56 +1,41 @@
 # klarpost
 
-**Policy-as-code for inbox attention, not just messages.**
+**Policy-as-code for inbox attention and deletion safety.**
 
-Email is interruption, obligation, and sensory load. klarpost makes YAML rules readable, decisions deterministic, and the paper trail hard to lose.
+Spam filters guess. **klarpost makes attention and deletion policy explicit and testable.** Reviewable YAML names matchers, precedence, actions, and reasons. The runner uses synthetic fixtures only: no mailbox, credentials, or deletion.
 
-> Calm is not the same as empty.
+## Architecture
 
-Alpha 0.1.0 · Python 3.11+ · MIT · synthetic fixtures only
+![klarpost architecture](docs/assets/architecture.svg)
 
-## Point of view
+The deterministic evaluator returns `keep`, `archive`, or `delete-candidate`; the last is only a human-review suggestion. Consequential mail is protected by a hard safety rail.
 
-Spam filters optimize for less; klarpost optimizes for fewer irreversible mistakes. Every result has a named rule and plain-English reason. `delete_candidate` is only a human-reviewed suggestion. ADHD and high-sensory-load are honest constraints, not a universal claim.
+## Thesis and sacred receipts
 
-## Policy is the nervous system
+A newsletter and an invoice are both messages, but losing the invoice costs more than reading one extra newsletter. ML filters hide that trade-off in a score; klarpost puts it in versioned text. Attention is a budget; deletion is asymmetric.
 
-**Notice**, **name**, **choose**, **explain**, then **veto**.
+Receipts are evidence, not clutter. **Preserve the paper trail before optimizing for quiet.** Prefer a visible false negative to an irreversible mistake. See `fixtures/protected_must_keep.json`.
 
-```mermaid
-flowchart LR
- M[Fixture] --> N[Notice] --> C[Classify] --> P[Policy]
- P --> V{Protected?}
- V -- yes --> F[File / keep]
- V -- no --> A[Archive / keep / candidate]
- F --> R[Receipt]
- A --> R
-```
+| Concern | ML | klarpost |
+|---|---|---|
+| Decision | Score | YAML rule |
+| Deletion | May follow | Never |
+| Audit | Opaque | Diffable |
 
-## Receipts are sacred
-
-- Orders, invoices, receipts, tickets, travel, banking, security, government, medical, legal, and identity mail are never delete candidates.
-- `Your order - 20% off` is still an order.
-- A candidate is never execution; ambiguity chooses `keep` or `ablegen`.
-
-Hard protected categories are always unioned into packs; validation rejects weakened rails.
-
-## Quick start
+## Quickstart
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-klarpost validate -p policies/packs/inbox-calm.yaml
-python -m klarpost.demo -p policies/packs/inbox-calm.yaml -f fixtures/inbox_mixed.json
+python -m pip install -e '.[dev]'
+klarpost demo
+klarpost validate --policy policies/packs/inbox-calm.yaml
+klarpost evaluate --policy policies/packs/inbox-calm.yaml --fixtures fixtures/inbox_mixed.json
 ```
 
-The demo explains why an order-plus-promo is filed. Nothing touches a mailbox.
+## Codex workflow
 
-## Good first issues
+Read [`AGENTS.md`](AGENTS.md). Policy changes ship with positive, near-miss, and protected-collision fixtures. Keep reasons English-first; run `pytest`, `ruff check src tests`, and validation. CI enforces the protected-fixture invariant. Review precedence, action, reason, and rail. See [`DESIGN.md`](DESIGN.md).
 
-1. Attention-cost field + collision fixtures; no telemetry.
-2. Quiet-hours pack with explicit schedule; receipts stay visible.
-3. Policy lint naming the exact never-delete collision.
+Fixture-only software; preserve the no-live-mail boundary.
 
-`pytest && ruff check src tests` · English-first docs · no live connectors, private samples, or silent deletion.
-
-[MIT](LICENSE) · [AGENTS.md](AGENTS.md)
+*DE: „klar“ heißt clear; der Name bleibt bewusst `klarpost`.*
