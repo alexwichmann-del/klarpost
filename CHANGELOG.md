@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Docs, comments, and rule reasons are English-first. A short optional
+  German section remains at the end of the README. YAML action token
+  `ablegen` is unchanged (it means "file the paper trail").
+
 ## 0.1.0 — 2026-09-11
 
 First public alpha.

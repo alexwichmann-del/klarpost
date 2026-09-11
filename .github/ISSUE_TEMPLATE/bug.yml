@@ -12,8 +12,8 @@ body:
     id: expected
     attributes:
       label: Expected action
-      description: ablegen, archive, keep, or delete_candidate
-      placeholder: ablegen (invoice)
+      description: "file (ablegen), archive, keep, or delete_candidate"
+      placeholder: "ablegen — file an invoice"
     validations:
       required: true
   - type: textarea

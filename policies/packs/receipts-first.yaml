@@ -2,8 +2,8 @@ version: 1
 id: receipts-first
 name: Receipts first
 description: >
-  Conservative starter pack. Ablegen (file) orders, invoices, tickets, banking,
-  and security mail. Archive obvious newsletters. Do not propose deletes.
+  Conservative starter pack. File orders, invoices, tickets, banking, and
+  security mail. Archive obvious newsletters. Do not propose deletes.
   Built for a high-sensory inbox: fewer decisions, visible paper trail.
 locale: en
 safety:
@@ -33,7 +33,7 @@ rules:
         - quittung
     classify: invoice
     action: ablegen
-    reason: Invoices and receipts are Belege — file them, never delete.
+    reason: Invoices and receipts are paper trail — file them, never delete.
 
   - id: ablegen-orders
     priority: 85

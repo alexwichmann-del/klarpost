@@ -6,7 +6,7 @@ security mail can never become `delete_candidate`, even if a rule is sloppy.
 
 ## Actions (priority)
 
-1. `ablegen` — file / keep the paper trail (Belege)
+1. `ablegen` — file / keep the paper trail (receipts, invoices, tickets)
 2. `archive` — leave the inbox, keep the message
 3. `keep` — stay in the inbox; do not guess
 4. `delete_candidate` — **suggestion only**. A human still decides. klarpost
@@ -15,7 +15,8 @@ security mail can never become `delete_candidate`, even if a rule is sloppy.
 ## Authoring rules
 
 - Every rule needs a stable `id`, a non-empty `match`, a `classify`, an
-  `action`, and a one-line `reason`.
+  `action`, and a one-line English `reason`. Matcher keywords may include
+  other locales.
 - `match_mode: any_field` (default) fires when any filled matcher hits.
   Use `all_fields` when you need several signals together.
 - Do not classify a protected category as `delete_candidate`. Validation fails.

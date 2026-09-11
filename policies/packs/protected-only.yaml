@@ -2,7 +2,7 @@ version: 1
 id: protected-only
 name: Protected only
 description: >
-  Smallest useful pack: only Ablegen rules for paper-trail and security mail.
+  Smallest useful pack: only file rules for paper-trail and security mail.
   Everything else stays in the inbox (keep). Use this when you want zero
   delete-candidates until you trust a calmer pack.
 locale: en

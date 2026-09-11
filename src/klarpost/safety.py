@@ -119,7 +119,7 @@ def veto_delete(
 
 
 def downgrade_after_veto(categories: set[str]) -> Action:
-    """After a veto, prefer Ablegen for paper-trail mail, else keep."""
+    """After a veto, prefer file (ablegen) for paper-trail mail, else keep."""
     paper = {"order", "invoice", "receipt", "ticket", "travel", "legal", "identity"}
     if categories & paper:
         return Action.ABLEGEN

@@ -8,7 +8,7 @@ body:
     attributes:
       label: Intent
       description: Who is this pack for, and which action ladder do you want?
-      placeholder: Archive newsletters in German; still Ablegen every Beleg.
+      placeholder: Archive German-language newsletters; still file every receipt.
     validations:
       required: true
   - type: textarea

@@ -29,7 +29,7 @@ rules:
       subject_contains: [invoice, receipt, rechnung, beleg, quittung]
     classify: invoice
     action: ablegen
-    reason: Belege first — invoices and receipts stay.
+    reason: Receipts first — invoices stay.
 
   - id: ablegen-orders
     priority: 85
