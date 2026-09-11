@@ -1,0 +1,34 @@
+{
+  "description": "Obvious newsletter / promo fixtures with no protected signals.",
+  "messages": [
+    {
+      "id": "promo-flash",
+      "from": "hello@boutique.example",
+      "to": "you@example.com",
+      "subject": "Flash sale — 30% off spring layering",
+      "headers": {},
+      "body_preview": "Last chance, don't miss these clearance pieces.",
+      "has_attachment": false
+    },
+    {
+      "id": "promo-digest",
+      "from": "editors@newsletter.example",
+      "to": "you@example.com",
+      "subject": "Weekly digest from the editors",
+      "headers": {
+        "list-unsubscribe": "<https://newsletter.example/leave>"
+      },
+      "body_preview": "Five links we liked. No invoice, no order, no ticket.",
+      "has_attachment": false
+    },
+    {
+      "id": "promo-rabatt",
+      "from": "info@markt.example",
+      "to": "you@example.com",
+      "subject": "Nur heute — 25% Rabatt im Shop",
+      "headers": {},
+      "body_preview": "Bis zu 25% auf ausgewählte Farben.",
+      "has_attachment": false
+    }
+  ]
+}

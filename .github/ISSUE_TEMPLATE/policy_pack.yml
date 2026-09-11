@@ -1,0 +1,27 @@
+name: Policy pack idea
+description: Propose a new pack or a rule change
+title: "pack: "
+labels: ["policy-pack"]
+body:
+  - type: textarea
+    id: intent
+    attributes:
+      label: Intent
+      description: Who is this pack for, and which action ladder do you want?
+      placeholder: Archive newsletters in German; still Ablegen every Beleg.
+    validations:
+      required: true
+  - type: textarea
+    id: fixtures
+    attributes:
+      label: Fixtures that today's packs get wrong
+      description: Synthetic subjects/from lines only.
+    validations:
+      required: true
+  - type: checkboxes
+    id: rails
+    attributes:
+      label: Rails
+      options:
+        - label: I am not asking to auto-delete or to remove a protected category
+          required: true

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check src tests
+      - name: Tests
+        run: pytest
+      - name: Validate sample packs
+        run: |
+          set -euo pipefail
+          for pack in policies/packs/*.yaml; do
+            klarpost validate --policy "$pack"
+          done
+      - name: Protected fixtures must never be delete-candidates
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          packs = sorted(Path("policies/packs").glob("*.yaml"))
+          fixtures = Path("fixtures/protected_must_keep.json")
+          failed = False
+          for pack in packs:
+              raw = subprocess.check_output(
+                  [
+                      "klarpost",
+                      "evaluate",
+                      "--policy",
+                      str(pack),
+                      "--fixtures",
+                      str(fixtures),
+                      "--format",
+                      "json",
+                  ],
+                  text=True,
+              )
+              rows = json.loads(raw)
+              bad = [row["message_id"] for row in rows if row["action"] == "delete_candidate"]
+              if bad:
+                  failed = True
+                  print(f"FAIL {pack}: delete_candidate on {bad}", file=sys.stderr)
+              else:
+                  print(f"ok   {pack}: {len(rows)} protected fixtures")
+          sys.exit(1 if failed else 0)
+          PY
+      - name: CLI refuses live-mail flags
+        run: |
+          set -euo pipefail
+          if klarpost evaluate --imap mail.example --policy policies/packs/inbox-calm.yaml --fixtures fixtures/inbox_mixed.json; then
+            echo "expected non-zero exit for --imap" >&2
+            exit 1
+          fi

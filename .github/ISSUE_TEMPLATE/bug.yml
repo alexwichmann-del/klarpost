@@ -1,0 +1,44 @@
+name: Bug
+description: Something classified wrong, crashed, or ignored a safety rail
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Do **not** paste a real email. Reproduce with a synthetic fixture
+        (`example.com` addresses only).
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected action
+      description: ablegen, archive, keep, or delete_candidate
+      placeholder: ablegen (invoice)
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual action
+    validations:
+      required: true
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Synthetic fixture (JSON)
+      render: json
+      placeholder: '{"id":"fx-…","from":"billing@shop.example","subject":"Invoice 1"}'
+    validations:
+      required: true
+  - type: input
+    id: pack
+    attributes:
+      label: Policy pack
+      placeholder: policies/packs/inbox-calm.yaml
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: This report contains no real personal mail or credentials
+          required: true

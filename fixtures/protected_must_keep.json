@@ -1,0 +1,72 @@
+{
+  "description": "Every message here is protected paper-trail or security mail. Zero delete_candidate allowed.",
+  "messages": [
+    {
+      "id": "keep-invoice",
+      "from": "invoices@vendor.example",
+      "to": "you@example.com",
+      "subject": "Tax invoice 8891",
+      "body_preview": "Receipt attached for your records.",
+      "has_attachment": true
+    },
+    {
+      "id": "keep-order",
+      "from": "orders@merchant.example",
+      "to": "you@example.com",
+      "subject": "Order confirmation for kitchen kettle",
+      "body_preview": "Your order #9910 is confirmed.",
+      "has_attachment": false
+    },
+    {
+      "id": "keep-ticket",
+      "from": "noreply@airline.example",
+      "to": "you@example.com",
+      "subject": "Boarding pass — booking XYZ",
+      "body_preview": "Mobile boarding pass and itinerary attached.",
+      "has_attachment": true
+    },
+    {
+      "id": "keep-bank",
+      "from": "noreply@creditunion.example",
+      "to": "you@example.com",
+      "subject": "Payment received — SEPA Überweisung",
+      "body_preview": "Direct debit / Lastschrift scheduled.",
+      "has_attachment": false
+    },
+    {
+      "id": "keep-security",
+      "from": "no-reply@id.example",
+      "to": "you@example.com",
+      "subject": "Security alert: password reset requested",
+      "body_preview": "A password reset was requested. Verification code 000000 is a fixture.",
+      "has_attachment": false
+    },
+    {
+      "id": "keep-medical",
+      "from": "clinic@health.example",
+      "to": "you@example.com",
+      "subject": "Terminbestätigung Friday morning",
+      "body_preview": "Appointment confirmation. Lab result portal note attached.",
+      "has_attachment": true
+    },
+    {
+      "id": "keep-identity",
+      "from": "docs@city.example",
+      "to": "you@example.com",
+      "subject": "Copy of your Personalausweis application",
+      "body_preview": "National ID / Personalausweis receipt for your records.",
+      "has_attachment": true
+    },
+    {
+      "id": "keep-order-with-sale-language",
+      "from": "promo@merchant.example",
+      "to": "you@example.com",
+      "subject": "Your order #12 — 50% off coupon for next time",
+      "headers": {
+        "list-unsubscribe": "<mailto:unsub@merchant.example>"
+      },
+      "body_preview": "Shipping confirmation and tracking number plus a flash sale.",
+      "has_attachment": false
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "description": "Synthetic mixed inbox. All addresses use example.com / reserved names.",
+  "messages": [
+    {
+      "id": "fx-invoice-01",
+      "from": "billing@shop.example",
+      "to": "you@example.com",
+      "subject": "Invoice 1042 for your recent purchase",
+      "date": "2026-03-01T09:00:00Z",
+      "headers": {},
+      "body_preview": "Please find your invoice attached. Amount due next month.",
+      "has_attachment": true
+    },
+    {
+      "id": "fx-order-promo-collision",
+      "from": "deals@shop.example",
+      "to": "you@example.com",
+      "subject": "Your order #4821 shipped — plus 20% off your next visit",
+      "date": "2026-03-01T10:00:00Z",
+      "headers": {
+        "list-unsubscribe": "<mailto:unsub@shop.example>"
+      },
+      "body_preview": "Tracking number 1Z999. Also a flash sale this weekend.",
+      "has_attachment": false
+    },
+    {
+      "id": "fx-ticket-01",
+      "from": "tickets@rail.example",
+      "to": "you@example.com",
+      "subject": "Your e-ticket and itinerary for Saturday",
+      "date": "2026-03-02T08:00:00Z",
+      "headers": {},
+      "body_preview": "Show this boarding pass on your phone. Reservation ABC123.",
+      "has_attachment": true
+    },
+    {
+      "id": "fx-bank-01",
+      "from": "alerts@bank.example",
+      "to": "you@example.com",
+      "subject": "Kontoauszug Februar 2026",
+      "date": "2026-03-03T06:00:00Z",
+      "headers": {},
+      "body_preview": "Your account statement is ready. SEPA lastschrift listed inside.",
+      "has_attachment": true
+    },
+    {
+      "id": "fx-security-01",
+      "from": "security@accounts.example",
+      "to": "you@example.com",
+      "subject": "New sign-in and verification code",
+      "date": "2026-03-03T11:12:00Z",
+      "headers": {},
+      "body_preview": "If this was not you, reset your password. One-time code included.",
+      "has_attachment": false
+    },
+    {
+      "id": "fx-newsletter-01",
+      "from": "hello@magazine.example",
+      "to": "you@example.com",
+      "subject": "Weekly digest: five short reads",
+      "date": "2026-03-04T07:00:00Z",
+      "headers": {
+        "list-unsubscribe": "<https://magazine.example/unsub>"
+      },
+      "body_preview": "This week in design, walking, and small kitchens.",
+      "has_attachment": false
+    },
+    {
+      "id": "fx-promo-01",
+      "from": "news@outlet.example",
+      "to": "you@example.com",
+      "subject": "Flash sale — 40% off everything, last chance",
+      "date": "2026-03-04T12:00:00Z",
+      "headers": {},
+      "body_preview": "Don't miss clearance prices. Nur heute.",
+      "has_attachment": false
+    },
+    {
+      "id": "fx-unknown-01",
+      "from": "person@example.net",
+      "to": "you@example.com",
+      "subject": "Are you free Thursday?",
+      "date": "2026-03-05T15:00:00Z",
+      "headers": {},
+      "body_preview": "Coffee near the library if you have a window.",
+      "has_attachment": false
+    },
+    {
+      "id": "fx-rechnung-de",
+      "from": "buchhaltung@laden.example",
+      "to": "you@example.com",
+      "subject": "Rechnung 77/2026 — Beleg im Anhang",
+      "date": "2026-03-06T09:30:00Z",
+      "headers": {},
+      "body_preview": "Im Anhang Ihre Rechnung als PDF.",
+      "has_attachment": true
+    },
+    {
+      "id": "fx-empty-subject",
+      "from": "unknown@example.org",
+      "to": "you@example.com",
+      "subject": "",
+      "date": "2026-03-06T18:00:00Z",
+      "headers": {},
+      "body_preview": "",
+      "has_attachment": false
+    }
+  ]
+}
