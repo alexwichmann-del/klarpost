@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- README diagrams and the header mark use PNG embeds so GitHub mobile
+  actually shows them. SVG sources stay in `docs/assets/` (UTF-8).
+  `evaluation.svg` and `action-ladder.svg` were not well-formed UTF-8
+  (Latin-1 `·`), which matches the broken-image placeholders on mobile.
 - Attention cost is a first-class, deterministic field on every evaluation
   (`ablegen`/`archive` = 1, `delete_candidate` = 2, `keep` = 3). CLI, JSON,
   demo, and `tests/test_attention.py` share one table.

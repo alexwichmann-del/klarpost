@@ -2,7 +2,7 @@
   <title id="title">klarpost evaluation</title>
   <desc id="desc">Fixture messages are matched against YAML rules, an action is chosen by priority, a hard safety veto blocks delete-candidates on protected mail, and the result is a reviewable receipt with attention cost.</desc>
   <rect width="920" height="248" fill="#F7F4EF"/>
-  <text x="28" y="32" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#57534E" letter-spacing="0.08em">EVALUATION · DETERMINISTIC · FIXTURES ONLY</text>
+  <text x="28" y="32" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#57534E" letter-spacing="0.08em">EVALUATION Â· DETERMINISTIC Â· FIXTURES ONLY</text>
 
   <!-- nodes -->
   <g font-family="ui-sans-serif, system-ui, sans-serif">
@@ -24,7 +24,7 @@
 
     <rect x="764" y="56" width="128" height="88" rx="6" fill="#0F766E" />
     <text x="828" y="94" text-anchor="middle" font-size="15" font-weight="600" fill="#F7F4EF">Receipt</text>
-    <text x="828" y="116" text-anchor="middle" font-size="11" fill="#CCFBF1">id · action · cost · why</text>
+    <text x="828" y="116" text-anchor="middle" font-size="11" fill="#CCFBF1">id Â· action Â· cost Â· why</text>
   </g>
 
   <!-- arrows -->
@@ -39,8 +39,8 @@
   <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" fill="#44403C">
     <text x="28" y="182" font-weight="600" fill="#1C1917">Attention cost (lower is quieter)</text>
     <text x="28" y="206">file / archive = 1</text>
-    <text x="188" y="206">delete_candidate = 2  ·  still needs a human</text>
-    <text x="488" y="206">keep = 3  ·  still occupies the inbox</text>
+    <text x="188" y="206">delete_candidate = 2  Â·  still needs a human</text>
+    <text x="488" y="206">keep = 3  Â·  still occupies the inbox</text>
     <text x="28" y="230" fill="#57534E">Protected mail cannot pay cost 2. A candidate is never execution.</text>
   </g>
 </svg>
