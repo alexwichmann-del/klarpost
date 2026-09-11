@@ -1,25 +1,19 @@
-# Design notes: a calmer boundary
+# Design: attention is the scarce resource
 
-`klarpost` is not a smarter spam filter. It is a small, inspectable boundary between an inbox and an irreversible decision.
+Email is not only storage or classification. It is attentional load: every message can demand noticing, interpretation, a decision, and later recall. A quiet inbox is not necessarily a safe inbox. The cost of wrong deletion is often higher than one extra review.
 
-## Start with attention, not volume
+## Make the boundary explicit
 
-An inbox consumes attention before storage. A message can be harmless and still be expensive to notice, interpret, and remember. We optimize for recoverability: fewer decisions, clearer reasons, and no surprise deletion.
+Spam filters optimize a broad probability of unwanted mail. klarpost makes the local trade-off inspectable. A policy pack names the signal, category, action, precedence, and reason. The evaluator is deterministic, so the same fixture and policy produce the same receipt. When no rule earns confidence, uncertainty remains visible and the message stays available.
 
-ADHD and high-sensory-load workflows are useful constraints because they expose hidden costs. They are not a diagnosis, a promise of universal accessibility, or a claim that one inbox fits everyone.
+The safety rail is stronger than a matcher. Orders, invoices, receipts, tickets, travel, banking, security, government, medical, legal, and identity mail are consequential evidence. They must not become `delete-candidate` because a broad low-value rule matched. That action is a review queue, never an erase instruction.
 
-## Make the nervous system explicit
+## Why deterministic rails
 
-A policy pack is a deliberately boring nervous system: notice a signal, name a category, choose an action, explain the choice, then apply a veto. YAML lets a human review the diff; the runner tests that diff against fixtures.
+Determinism is a social feature. A maintainer can diff a policy, add a fixture, reproduce a result, and explain the reason without reconstructing a model's hidden state. Conservative precedence makes irreversible mistakes hard to express. Synthetic fixtures keep the runner outside live-mail and credential workflows.
 
-The ladder is conservative: file the paper trail, archive low-urgency mail, keep uncertainty visible, then suggest a candidate. A suggestion is not an instruction. The engine never connects to a mailbox or executes deletion.
+## What Codex is for
 
-## Receipts over cleverness
+Codex can propose matchers, enumerate edge cases, write fixture coverage, and clarify reasons. It should act like a careful maintainer: read `AGENTS.md`, preserve the sacred rail, and show its work in a small diff. It is not the authority that decides what a person may lose.
 
-A receipt is the rule id, action, reason, and any safety veto. Someone can understand it later, challenge it, and improve the pack without guessing. Protected categories are a hard floor: marketing language must not erase an order confirmation. When signals collide, the paper trail wins; when they are ambiguous, keep the message.
-
-## Small surface area is a feature
-
-Synthetic fixtures keep review safe and reproducible. Packs keep behavior legible. Tests are executable promises about what klarpost will never do. New cleverness should arrive as a small rule, a fixture, and an explanation.
-
-Treat inbox hygiene as a safety-critical attention interface, then keep the implementation humble enough to audit on a tired Sunday.
+A good PR pairs a policy change with a positive fixture, a near miss, and a protected collision where relevant. CI checks the invariant; human review checks whether the rule expresses the intended attention policy. This keeps the system useful, legible, and reversible.
