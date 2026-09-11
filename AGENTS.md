@@ -1,102 +1,40 @@
-# AGENTS.md — maintainer workflows (Codex and humans)
+# AGENTS.md — maintainer contract
 
-This file is the contract for coding agents that help maintain klarpost
-(OpenAI Codex, similar review bots, or a tired human on a Sunday).
-
-klarpost is **policy-as-code for personal email hygiene**. The interesting
-work is reviewing YAML packs and safety tests — not connecting a mailbox.
+Working agreement for humans and coding agents maintaining klarpost. It is policy-as-code for personal mail hygiene, not a mailbox connector.
 
 ## North star
 
-1. People with ADHD / high sensory load should be able to *read* why a
-   message would be filed, archived, or only *suggested* for deletion.
-2. Orders, invoices, receipts, tickets, banking, and security mail are
-   never `delete_candidate`.
-3. The reference CLI stays **fixtures-only**. No IMAP, SMTP, OAuth, tokens,
-   or personal mail samples.
-4. **English first.** README, CONTRIBUTING, issues, PR text, CLI help,
-   rule `reason` strings, and code comments are written in English.
-   Matcher keywords may include other locales (e.g. `rechnung`). A short
-   optional German section at the end of the README is fine.
+- Explain why mail was filed, archived, kept, or only suggested for deletion.
+- Protect orders, invoices, receipts, tickets, travel, banking, security, government, medical, legal, and identity mail: never `delete_candidate`.
+- Keep the CLI fixtures-only: no IMAP, SMTP, OAuth, tokens, credentials, or personal mail.
+- Write docs, issues, PRs, CLI help, reasons, comments, and tests in English first; matcher keywords may include other languages.
 
-## What you may do
+ADHD and high-sensory-load framing is honest context, not a universal-accessibility claim.
 
-- Review policy-pack PRs against the checklist below
-- Add fixtures and pytest coverage when a rule is ambiguous
-- Improve `evaluate` / `explain` output (still local files)
-- Triage issues (`good first issue`, `safety`, `policy-pack`, `docs`)
-- Propose copy that stays honest: this is alpha, not a popular product
+## Do
 
-## What you must never do
+- Review policy diffs as safety changes.
+- Add a synthetic fixture for ambiguous matcher collisions.
+- Preserve `ablegen` > `archive` > `keep` > `delete_candidate`.
+- Keep explanations useful: rule id, reason, action, safety veto.
 
-- Add a live mail client, credential flag, or `.env` mail password
-- Commit real From/To addresses, phone numbers, or account identifiers
-- Delete or narrow `HARD_PROTECTED_CATEGORIES` in `src/klarpost/safety.py`
-- Set `require_human_review_for_delete: false` or default `delete_candidate`
-- Trade a red safety test for a "smarter" promo rule
-- Mention or import anything from private personal/work tooling
+## Never
 
-## Policy PR review checklist
+- Add live-mail or credential handling, or real personal/work data.
+- Weaken `HARD_PROTECTED_CATEGORIES`.
+- Set `default_action: delete_candidate` or disable human review.
+- Trade away a safety test for a clever promo rule.
 
-Run from the repo root after `pip install -e ".[dev]"`:
+## Review
 
 ```bash
+pip install -e ".[dev]"
 pytest
 ruff check src tests
-klarpost validate --policy policies/packs/<pack>.yaml
-klarpost evaluate --policy policies/packs/<pack>.yaml \
-  --fixtures fixtures/protected_must_keep.json --format json
+klarpost validate -p policies/packs/<pack>.yaml
+klarpost evaluate -p policies/packs/<pack>.yaml -f fixtures/protected_must_keep.json --format json
 ```
 
-Then read the diff as a safety review:
+Check schema, unique ids, non-empty matches, plain-English reasons, and zero delete candidates in protected fixtures. Each delete rule needs a clean promo fixture and a collision case. Rails are a backstop, not permission to ship sloppy rules.
 
-1. **Schema** — `version: 1`, unique rule ids, non-empty `match`, human
-   `reason` strings.
-2. **Ladder** — file (`ablegen`) beats archive beats keep beats
-   delete-candidate. A colliding order+promo rule must still file.
-3. **Protected fixture** — zero `delete_candidate` rows on
-   `fixtures/protected_must_keep.json`.
-4. **New delete rules** — each one has a *clean* promo fixture (no invoice /
-   order / ticket / bank / 2FA language) *and* you thought about a collision
-   case.
-5. **Locale** — DE/EN phrases are fine; do not assume one language covers
-   safety. Keyword rails in `safety.py` already cover both for the hard set.
-6. **Honesty** — PR description does not claim auto-delete or production
-   IMAP support.
-
-If the pack is sloppy but the engine vetoes the delete, **do not merge**
-until the pack itself is corrected. Rails are a backstop, not a style guide.
-
-## Issue triage (Codex)
-
-- `safety` / "this would have deleted my invoice" → reproduce with a
-  **synthetic** fixture, add a test, keep the rail. Never ask the reporter
-  to paste a real email.
-- Feature requests for IMAP → politely close or park as out of scope;
-  point at fixtures. Do not scaffold a connector "just for local use".
-- `good first issue` → keep the task smaller than one evening: a pack, a
-  handful of fixtures, or a CLI output tweak.
-- Duplicate pack ideas → ask for a fixture that today's packs get wrong.
-
-## CI contract
-
-`.github/workflows/ci.yml` must stay red when:
-
-- pytest fails (especially `tests/test_safety.py`)
-- ruff fails
-- a sample pack fails `klarpost validate`
-- protected fixtures emit `delete_candidate`
-
-Do not skip CI with `continue-on-error` on those jobs.
-
-## Review comments that help
-
-Good: "This subject matcher also hits `Your order #… 30% off`. Add that
-fixture; expected action is `ablegen`."
-
-Bad: "Make delete the default so the inbox is emptier."
-
-## When you are unsure
-
-Prefer `keep` or `ablegen` over `delete_candidate`. File a follow-up issue
-instead of guessing. The cost of a wrong delete is the whole product.
+Use `good first issue`, `safety`, `policy-pack`, or `docs`. Reproduce with synthetic data only; park live-connector requests. Prefer `keep` or `ablegen` when unsure: the cost of a wrong delete is the whole product.
