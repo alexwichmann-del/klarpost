@@ -162,7 +162,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Human-readable email hygiene policy. Hard safety rails in the engine still block delete-candidates on orders, invoices, tickets, banking, and security mail even if a pack is incomplete.",
+  "description": "Human-readable inbox policy. Hard safety rails in the engine still block delete-candidates on orders, invoices, receipts, tickets, travel, banking, security, government, medical, legal, and identity mail even if a pack is incomplete.",
   "properties": {
     "version": {
       "const": 1,

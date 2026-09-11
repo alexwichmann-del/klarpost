@@ -10,8 +10,9 @@ def policy_json_schema() -> dict:
     schema["$schema"] = "https://json-schema.org/draft/2020-12/schema"
     schema["title"] = "klarpost policy pack"
     schema["description"] = (
-        "Human-readable email hygiene policy. Hard safety rails in the engine "
-        "still block delete-candidates on orders, invoices, tickets, banking, "
-        "and security mail even if a pack is incomplete."
+        "Human-readable inbox policy. Hard safety rails in the engine still "
+        "block delete-candidates on orders, invoices, receipts, tickets, "
+        "travel, banking, security, government, medical, legal, and identity "
+        "mail even if a pack is incomplete."
     )
     return schema

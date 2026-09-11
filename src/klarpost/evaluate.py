@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from klarpost.attention import attention_cost
 from klarpost.match import message_matches
 from klarpost.models import ACTION_PRIORITY, Action, Message, PolicyPack
 from klarpost.safety import (
     SafetyHit,
-    downgrade_after_veto,
+    enforce_protected_action,
     merge_protected_categories,
     scan_message,
-    veto_delete,
 )
 
 
@@ -32,6 +32,7 @@ class Evaluation:
     matched_rules: list[str]
     safety_categories: list[str]
     safety_veto: bool
+    attention_cost: int
     reasons: list[str] = field(default_factory=list)
 
     def as_dict(self) -> dict[str, object]:
@@ -42,6 +43,7 @@ class Evaluation:
             "matched_rules": list(self.matched_rules),
             "safety_categories": list(self.safety_categories),
             "safety_veto": self.safety_veto,
+            "attention_cost": self.attention_cost,
             "reasons": list(self.reasons),
         }
 
@@ -63,13 +65,19 @@ def evaluate_message(message: Message, pack: PolicyPack) -> Evaluation:
 
     categories = {hit.classify for hit in rule_hits} | {hit.category for hit in safety_hits}
     proposed = _choose_action(rule_hits, pack.safety.default_action)
-    blocked = veto_delete(proposed, categories, protected)
-    delete_matched = any(hit.action is Action.DELETE_CANDIDATE for hit in rule_hits)
     protected_hit = bool(categories & set(protected))
-    overridden = delete_matched and protected_hit
-    final = downgrade_after_veto(categories) if blocked else proposed
+    delete_matched = any(hit.action is Action.DELETE_CANDIDATE for hit in rule_hits)
+    final = enforce_protected_action(proposed, categories, protected)
+    intervened = final is not proposed
+    blocked = delete_matched and protected_hit and final is not Action.DELETE_CANDIDATE
 
-    reasons = _reasons(rule_hits, safety_hits, blocked, overridden, final)
+    reasons = _reasons(
+        rule_hits,
+        safety_hits,
+        blocked=blocked,
+        overridden=intervened,
+        final=final,
+    )
     category = _primary_category(final, rule_hits, safety_hits, categories)
 
     return Evaluation(
@@ -78,7 +86,8 @@ def evaluate_message(message: Message, pack: PolicyPack) -> Evaluation:
         category=category,
         matched_rules=[hit.rule_id for hit in _sorted_hits(rule_hits)],
         safety_categories=sorted({hit.category for hit in safety_hits}),
-        safety_veto=blocked or overridden,
+        safety_veto=intervened or blocked,
+        attention_cost=attention_cost(final),
         reasons=reasons,
     )
 
@@ -153,7 +162,7 @@ def _reasons(
         )
     elif overridden:
         reasons.append(
-            "HARD SAFETY VETO: a delete_candidate rule matched protected mail; file/keep wins"
+            "HARD SAFETY VETO: a delete_candidate rule matched protected mail; file wins"
         )
     if not rule_hits and not safety_hits:
         reasons.append("no rule matched; default keep (do not guess-delete)")

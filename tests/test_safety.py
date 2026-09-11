@@ -7,7 +7,13 @@ import pytest
 from klarpost.evaluate import evaluate_message, evaluate_messages
 from klarpost.models import Action, Message, PolicyPack, Rule, SafetyConfig
 from klarpost.policy import PolicyError, parse_policy, validate_policy
-from klarpost.safety import HARD_PROTECTED_CATEGORIES, scan_message
+from klarpost.safety import (
+    ALIASED_PROTECTED_CATEGORIES,
+    HARD_PROTECTED_CATEGORIES,
+    SCANNED_PROTECTED_CATEGORIES,
+    enforce_protected_action,
+    scan_message,
+)
 
 
 def _msg(**kwargs) -> Message:
@@ -28,6 +34,12 @@ def test_hard_set_covers_paper_trail_and_security():
     assert required <= HARD_PROTECTED_CATEGORIES
 
 
+def test_every_hard_category_is_scanned_or_aliased():
+    covered = SCANNED_PROTECTED_CATEGORIES | set(ALIASED_PROTECTED_CATEGORIES)
+    missing = sorted(HARD_PROTECTED_CATEGORIES - covered)
+    assert missing == []
+
+
 @pytest.mark.parametrize(
     "subject,expected",
     [
@@ -40,6 +52,9 @@ def test_hard_set_covers_paper_trail_and_security():
         ("Password reset requested", "security"),
         ("Terminbestätigung + Befund", "medical"),
         ("Personalausweis copy", "identity"),
+        ("Steuerbescheid 2025", "government"),
+        ("Legal notice and court summons", "legal"),
+        ("Hotel confirmation for Friday", "travel"),
     ],
 )
 def test_safety_scan_detects_protected_phrases(subject: str, expected: str):
@@ -107,10 +122,13 @@ def test_protected_fixture_file_has_zero_delete_candidates(inbox_calm, protected
     deleted = [item.message_id for item in results if item.action is Action.DELETE_CANDIDATE]
     assert deleted == []
     assert all(item.action in {Action.ABLEGEN, Action.KEEP, Action.ARCHIVE} for item in results)
-    # paper-trail fixtures should prefer file (ablegen)
     ablegen = {item.message_id for item in results if item.action is Action.ABLEGEN}
     assert "keep-invoice" in ablegen
     assert "keep-order-with-sale-language" in ablegen
+    assert "keep-government" in ablegen
+    assert "keep-legal" in ablegen
+    assert "keep-travel" in ablegen
+    assert all(item.attention_cost == 1 for item in results)
 
 
 @pytest.mark.parametrize("pack_fixture", ["inbox_calm", "receipts_first", "protected_only"])
@@ -190,18 +208,40 @@ def test_policy_cannot_disable_human_review():
         )
 
 
+def test_delete_rule_cannot_name_protected_keywords_in_matchers():
+    with pytest.raises(PolicyError, match="protected"):
+        parse_policy(
+            {
+                "version": 1,
+                "id": "named-invoice",
+                "name": "No",
+                "description": "A delete rule that names an invoice in its matchers.",
+                "safety": {"require_human_review_for_delete": True},
+                "rules": [
+                    {
+                        "id": "too-broad-sale",
+                        "match": {"subject_contains": ["sale", "invoice"]},
+                        "classify": "promo",
+                        "action": "delete_candidate",
+                        "reason": "too broad on purpose",
+                    }
+                ],
+            }
+        )
+
+
 def test_sloppy_promo_rule_is_vetoed_by_engine_rails():
     pack = parse_policy(
         {
             "version": 1,
             "id": "sloppy",
             "name": "Sloppy",
-            "description": "A promo rule that also matches invoices by accident.",
+            "description": "A promo rule that collides with invoices only at evaluation.",
             "safety": {"require_human_review_for_delete": True},
             "rules": [
                 {
                     "id": "too-broad-sale",
-                    "match": {"subject_contains": ["sale", "invoice"]},
+                    "match": {"subject_contains": ["sale"]},
                     "classify": "promo",
                     "action": "delete_candidate",
                     "reason": "too broad on purpose",
@@ -213,3 +253,55 @@ def test_sloppy_promo_rule_is_vetoed_by_engine_rails():
     assert result.action is not Action.DELETE_CANDIDATE
     assert result.safety_veto is True
     assert result.action is Action.ABLEGEN
+    assert result.attention_cost == 1
+
+
+def test_engine_files_protected_mail_when_a_delete_rule_collides():
+    pack = parse_policy(
+        {
+            "version": 1,
+            "id": "empty-ish",
+            "name": "Empty-ish",
+            "description": "No file rules. A colliding delete must still file a tax notice.",
+            "safety": {"require_human_review_for_delete": True},
+            "rules": [
+                {
+                    "id": "only-sale",
+                    "match": {"subject_contains": ["flash sale"]},
+                    "classify": "promo",
+                    "action": "delete_candidate",
+                    "reason": "noise",
+                }
+            ],
+        }
+    )
+    result = evaluate_message(_msg(subject="Steuerbescheid 2024 — flash sale"), pack)
+    assert result.action is Action.ABLEGEN
+    assert result.safety_veto is True
+    assert "government" in result.safety_categories
+
+
+def test_enforce_protected_action_blocks_delete_only():
+    assert (
+        enforce_protected_action(
+            Action.DELETE_CANDIDATE, {"invoice"}, HARD_PROTECTED_CATEGORIES
+        )
+        is Action.ABLEGEN
+    )
+    assert (
+        enforce_protected_action(Action.KEEP, {"invoice"}, HARD_PROTECTED_CATEGORIES)
+        is Action.KEEP
+    )
+    assert (
+        enforce_protected_action(Action.ARCHIVE, {"invoice"}, HARD_PROTECTED_CATEGORIES)
+        is Action.ARCHIVE
+    )
+
+
+def test_enforce_protected_action_leaves_unprotected_delete():
+    assert (
+        enforce_protected_action(
+            Action.DELETE_CANDIDATE, {"promo"}, HARD_PROTECTED_CATEGORIES
+        )
+        is Action.DELETE_CANDIDATE
+    )

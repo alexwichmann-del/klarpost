@@ -9,8 +9,11 @@ from collections import Counter
 from pathlib import Path
 
 from klarpost import __version__
+from klarpost.attention import MAX_COST, budget
+from klarpost.demo import run_demo
 from klarpost.evaluate import Evaluation, evaluate_messages
 from klarpost.fixtures import FixtureError, load_fixtures
+from klarpost.models import Action
 from klarpost.policy import PolicyError, load_policy
 from klarpost.schema import policy_json_schema
 
@@ -67,8 +70,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="klarpost",
         description=(
-            "Policy-as-code for personal email hygiene. "
-            "This reference CLI evaluates fixture files only."
+            "Policy-as-code for inbox attention. "
+            "This reference CLI evaluates fixture files only — never a mailbox."
         ),
     )
     parser.add_argument("--version", action="version", version=f"klarpost {__version__}")
@@ -82,6 +85,11 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=("table", "json"),
         default="table",
         help="output format (default: table)",
+    )
+    evaluate.add_argument(
+        "--fail-on-delete",
+        action="store_true",
+        help="exit 1 if any message is a delete_candidate (use on protected fixtures)",
     )
     evaluate.set_defaults(func=_cmd_evaluate)
 
@@ -99,7 +107,18 @@ def _build_parser() -> argparse.ArgumentParser:
     explain.add_argument("--policy", "-p", required=True)
     explain.add_argument("--fixtures", "-f", required=True)
     explain.add_argument("--message-id", "-m", required=True)
+    explain.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="text is the human receipt; json is the machine record",
+    )
     explain.set_defaults(func=_cmd_explain)
+
+    demo = sub.add_parser("demo", help="narrate policy decisions for synthetic fixtures")
+    demo.add_argument("--policy", "-p", required=True, help="path to a YAML policy pack")
+    demo.add_argument("--fixtures", "-f", required=True, help="path to a JSON fixture file")
+    demo.set_defaults(func=_cmd_demo)
 
     return parser
 
@@ -113,6 +132,14 @@ def _cmd_evaluate(args: argparse.Namespace) -> int:
     else:
         _print_table(results)
         _print_summary(results)
+    if args.fail_on_delete:
+        bad = [item.message_id for item in results if item.action is Action.DELETE_CANDIDATE]
+        if bad:
+            print(
+                "fail-on-delete: delete_candidate on " + ", ".join(bad),
+                file=sys.stderr,
+            )
+            return 1
     return 0
 
 
@@ -130,6 +157,10 @@ def _cmd_schema(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_demo(args: argparse.Namespace) -> int:
+    return run_demo(args.policy, args.fixtures)
+
+
 def _cmd_explain(args: argparse.Namespace) -> int:
     pack = load_policy(args.policy)
     messages = load_fixtures(args.fixtures)
@@ -138,8 +169,29 @@ def _cmd_explain(args: argparse.Namespace) -> int:
         print(f"error: no fixture with id {args.message_id!r}", file=sys.stderr)
         return 1
     result = evaluate_messages([match], pack)[0]
-    print(json.dumps(result.as_dict(), indent=2, ensure_ascii=True))
+    if args.format == "json":
+        print(json.dumps(result.as_dict(), indent=2, ensure_ascii=True))
+        return 0
+    _print_explain(result)
     return 0
+
+
+def _print_explain(result: Evaluation) -> None:
+    verb = {
+        "ablegen": "file",
+        "archive": "archive",
+        "keep": "keep in inbox",
+        "delete_candidate": "suggest delete (human still decides)",
+    }[result.action.value]
+    print(f"message   {result.message_id}")
+    print(f"action    {result.action.value}  ({verb})")
+    print(f"category  {result.category}")
+    print(f"cost      {result.attention_cost}/{MAX_COST}  (lower is quieter)")
+    if result.safety_veto:
+        print("guard     SAFETY RAIL — protected mail is filed, never a delete candidate")
+    print("why")
+    for reason in result.reasons:
+        print(f"  {reason}")
 
 
 def _print_table(results: list[Evaluation]) -> None:
@@ -151,12 +203,13 @@ def _print_table(results: list[Evaluation]) -> None:
             item.message_id,
             item.action.value,
             item.category,
+            str(item.attention_cost),
             "veto" if item.safety_veto else "-",
             ",".join(item.matched_rules) or "-",
         )
         for item in results
     ]
-    headers = ("id", "action", "category", "safety", "rules")
+    headers = ("id", "action", "category", "cost", "safety", "rules")
     widths = [len(header) for header in headers]
     for row in rows:
         for index, cell in enumerate(row):
@@ -171,15 +224,20 @@ def _print_table(results: list[Evaluation]) -> None:
 def _print_summary(results: list[Evaluation]) -> None:
     counts = Counter(item.action.value for item in results)
     vetoes = sum(1 for item in results if item.safety_veto)
+    spent, ceiling = budget([item.action for item in results])
     print()
     print(
         "summary: "
-        + ", ".join(f"{name}={counts.get(name, 0)}" for name in (
-            "ablegen",
-            "archive",
-            "keep",
-            "delete_candidate",
-        ))
+        + ", ".join(
+            f"{name}={counts.get(name, 0)}"
+            for name in (
+                "ablegen",
+                "archive",
+                "keep",
+                "delete_candidate",
+            )
+        )
         + f", safety_vetoes={vetoes}"
     )
+    print(f"attention: {spent}/{ceiling}  (lower is quieter; keep costs {MAX_COST})")
     print(f"evaluated {len(results)} fixture message(s) from {Path.cwd()}")
