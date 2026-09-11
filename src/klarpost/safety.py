@@ -67,10 +67,27 @@ _SIGNAL_PATTERNS: tuple[tuple[str, str], ...] = (
         r"f[uü]hrerschein)\b",
         "identity",
     ),
+    (
+        r"\b(hotel (booking|reservation|confirmation)|check[- ]in is open|"
+        r"visa (appointment|application)|reisebest[aä]tigung)\b",
+        "travel",
+    ),
+    (
+        r"\b(court (summons|order)|legal notice|subpoena|cease and desist|"
+        r"power of attorney|vollmacht|gerichtliche ladung)\b",
+        "legal",
+    ),
 )
+
+# "receipt" keywords live in the invoice pattern; both categories are protected.
+ALIASED_PROTECTED_CATEGORIES: dict[str, str] = {"receipt": "invoice"}
 
 _COMPILED: tuple[tuple[re.Pattern[str], str], ...] = tuple(
     (re.compile(pattern, re.IGNORECASE), category) for pattern, category in _SIGNAL_PATTERNS
+)
+
+SCANNED_PROTECTED_CATEGORIES: frozenset[str] = frozenset(
+    category for _, category in _SIGNAL_PATTERNS
 )
 
 
@@ -119,8 +136,33 @@ def veto_delete(
 
 
 def downgrade_after_veto(categories: set[str]) -> Action:
-    """After a veto, prefer file (ablegen) for paper-trail mail, else keep."""
-    paper = {"order", "invoice", "receipt", "ticket", "travel", "legal", "identity"}
-    if categories & paper:
+    """After a veto, file any hard-protected mail. Uncertainty stays `keep`."""
+    if categories & set(HARD_PROTECTED_CATEGORIES):
         return Action.ABLEGEN
     return Action.KEEP
+
+
+def enforce_protected_action(
+    proposed: Action,
+    categories: set[str],
+    protected: frozenset[str],
+) -> Action:
+    """Never return delete_candidate when a protected category matched.
+
+    Archive and keep are left alone: a newsletter that *mentions* an invoice
+    is not an invoice. The rail exists to stop irreversible suggestions.
+    """
+    if proposed is Action.DELETE_CANDIDATE and categories & set(protected):
+        return downgrade_after_veto(categories)
+    return proposed
+
+
+def matcher_names_protected(blob: str) -> tuple[str, str] | None:
+    """If matcher text names a hard-protected signal, return (category, evidence)."""
+    if not blob.strip():
+        return None
+    for pattern, category in _COMPILED:
+        match = pattern.search(blob)
+        if match:
+            return category, match.group(0)
+    return None

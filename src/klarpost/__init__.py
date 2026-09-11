@@ -1,5 +1,6 @@
 """klarpost: policy-as-code for personal email hygiene."""
 
+from klarpost.attention import attention_cost, budget
 from klarpost.evaluate import Evaluation, evaluate_message, evaluate_messages
 from klarpost.models import Action, Message, PolicyPack, Rule
 from klarpost.policy import load_policy, validate_policy
@@ -12,6 +13,8 @@ __all__ = [
     "Message",
     "PolicyPack",
     "Rule",
+    "attention_cost",
+    "budget",
     "evaluate_message",
     "evaluate_messages",
     "load_policy",

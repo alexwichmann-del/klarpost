@@ -90,6 +90,51 @@ rules:
     action: ablegen
     reason: Security mail is never promotional noise.
 
+  - id: ablegen-medical
+    priority: 90
+    match:
+      subject_contains:
+        - lab result
+        - befund
+        - prescription
+        - appointment confirmation
+        - terminbestätigung
+    classify: medical
+    action: ablegen
+    reason: Medical mail is a health record — file it.
+
+  - id: ablegen-identity
+    priority: 95
+    match:
+      subject_contains: [passport, reisepass, personalausweis, national id]
+    classify: identity
+    action: ablegen
+    reason: Identity documents are never promotional noise.
+
+  - id: ablegen-government
+    priority: 95
+    match:
+      subject_contains: [steuerbescheid, tax notice, tax assessment]
+    classify: government
+    action: ablegen
+    reason: Government notices are records.
+
+  - id: ablegen-legal
+    priority: 95
+    match:
+      subject_contains: [court summons, legal notice, subpoena, vollmacht]
+    classify: legal
+    action: ablegen
+    reason: Legal mail is filed, not cleaned up.
+
+  - id: ablegen-travel
+    priority: 85
+    match:
+      subject_contains: [hotel confirmation, hotel reservation, visa appointment]
+    classify: travel
+    action: ablegen
+    reason: Travel confirmations are time-sensitive records.
+
   - id: archive-newsletters
     priority: 20
     match:

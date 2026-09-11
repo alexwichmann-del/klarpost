@@ -33,6 +33,8 @@ jobs:
           for pack in policies/packs/*.yaml; do
             klarpost validate --policy "$pack"
           done
+      - name: Demo (fixtures only)
+        run: python -m klarpost.demo -p policies/packs/inbox-calm.yaml -f fixtures/inbox_mixed.json
       - name: Protected fixtures must never be delete-candidates
         run: |
           set -euo pipefail
@@ -44,9 +46,8 @@ jobs:
 
           packs = sorted(Path("policies/packs").glob("*.yaml"))
           fixtures = Path("fixtures/protected_must_keep.json")
-          failed = False
           for pack in packs:
-              raw = subprocess.check_output(
+              proc = subprocess.run(
                   [
                       "klarpost",
                       "evaluate",
@@ -56,17 +57,21 @@ jobs:
                       str(fixtures),
                       "--format",
                       "json",
+                      "--fail-on-delete",
                   ],
+                  check=True,
+                  capture_output=True,
                   text=True,
               )
-              rows = json.loads(raw)
-              bad = [row["message_id"] for row in rows if row["action"] == "delete_candidate"]
-              if bad:
-                  failed = True
-                  print(f"FAIL {pack}: delete_candidate on {bad}", file=sys.stderr)
-              else:
-                  print(f"ok   {pack}: {len(rows)} protected fixtures")
-          sys.exit(1 if failed else 0)
+              rows = json.loads(proc.stdout)
+              if not rows:
+                  print(f"FAIL {pack}: empty evaluation", file=sys.stderr)
+                  sys.exit(1)
+              missing = [row["message_id"] for row in rows if "attention_cost" not in row]
+              if missing:
+                  print(f"FAIL {pack}: missing attention_cost on {missing}", file=sys.stderr)
+                  sys.exit(1)
+              print(f"ok   {pack}: {len(rows)} protected fixtures")
           PY
       - name: CLI refuses live-mail flags
         run: |

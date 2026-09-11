@@ -67,6 +67,30 @@
       },
       "body_preview": "Shipping confirmation and tracking number plus a flash sale.",
       "has_attachment": false
+    },
+    {
+      "id": "keep-government",
+      "from": "noreply@tax.example",
+      "to": "you@example.com",
+      "subject": "Steuerbescheid 2025 is ready",
+      "body_preview": "Tax assessment / Steuerbescheid for the fixture year.",
+      "has_attachment": true
+    },
+    {
+      "id": "keep-legal",
+      "from": "clerk@court.example",
+      "to": "you@example.com",
+      "subject": "Legal notice — court summons",
+      "body_preview": "Court summons for a fixture hearing. Not a newsletter.",
+      "has_attachment": true
+    },
+    {
+      "id": "keep-travel",
+      "from": "stay@hotel.example",
+      "to": "you@example.com",
+      "subject": "Hotel confirmation for your stay",
+      "body_preview": "Hotel booking confirmation. Check-in is open the day before.",
+      "has_attachment": false
     }
   ]
 }

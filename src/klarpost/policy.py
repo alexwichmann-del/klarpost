@@ -9,7 +9,11 @@ import yaml
 from pydantic import ValidationError
 
 from klarpost.models import Action, PolicyPack
-from klarpost.safety import HARD_PROTECTED_CATEGORIES, merge_protected_categories
+from klarpost.safety import (
+    HARD_PROTECTED_CATEGORIES,
+    matcher_names_protected,
+    merge_protected_categories,
+)
 
 
 class PolicyError(ValueError):
@@ -73,6 +77,22 @@ def validate_policy(pack: PolicyPack, *, source: str = "<memory>") -> None:
                 f"{source}: rule {rule.id!r} classifies {rule.classify!r} as "
                 "delete_candidate — protected categories may only file, archive, or keep"
             )
+        if rule.action is Action.DELETE_CANDIDATE:
+            blob = " ".join(
+                [
+                    *rule.match.subject_contains,
+                    *rule.match.subject_regex,
+                    *rule.match.from_contains,
+                    *rule.match.body_contains,
+                ]
+            )
+            named = matcher_names_protected(blob)
+            if named:
+                category, evidence = named
+                raise PolicyError(
+                    f"{source}: rule {rule.id!r} is delete_candidate but its matchers "
+                    f"name protected {category} ({evidence!r})"
+                )
 
 
 def _format_validation(source: str, exc: ValidationError) -> str:
