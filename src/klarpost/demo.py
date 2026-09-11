@@ -8,6 +8,8 @@ from klarpost.evaluate import evaluate_messages
 from klarpost.fixtures import load_fixtures
 from klarpost.policy import load_policy
 
+ATTENTION_COST = {"ablegen": 1, "archive": 1, "keep": 3, "delete_candidate": 2}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -23,9 +25,13 @@ def main() -> int:
     print(f"klarpost demo // {pack.name}")
     print("A calm inbox is not an empty inbox. Here is what the policy protects:\n")
 
+    total_cost = 0
     for result in results:
+        cost = ATTENTION_COST[result.action.value]
+        total_cost += cost
         print(f"MAIL  {result.message_id}")
         print(f"  route: {result.action.value}  |  category: {result.category}")
+        print(f"  attention cost: {cost}/3  (lower is quieter)")
         if result.safety_veto:
             print("  guard: SAFETY VETO — the paper trail wins")
         for reason in result.reasons:
@@ -34,6 +40,7 @@ def main() -> int:
             print("  why:   no rule matched; uncertainty stays visible")
         print()
 
+    print(f"attention budget: {total_cost} point(s) for {len(results)} message(s)")
     print("No mailbox was opened. No message was deleted. Every choice is reviewable.")
     return 0
 
