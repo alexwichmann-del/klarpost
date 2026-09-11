@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-label="klarpost architecture">
+  <rect width="960" height="420" fill="#0b1220"/>
+  <text x="48" y="48" fill="#e8eef7" font-family="ui-sans-serif,system-ui" font-size="22" font-weight="700">klarpost · deterministic policy evaluation</text>
+  <text x="48" y="74" fill="#8aa0b8" font-family="ui-sans-serif,system-ui" font-size="13">fixtures in → explicit rules → keep / archive / delete-candidate (with sacred rails)</text>
+  <rect x="48" y="110" width="220" height="220" rx="16" fill="#121a2b" stroke="#2a3b55"/>
+  <text x="68" y="148" fill="#7dd3c0" font-family="ui-monospace,monospace" font-size="13">01  POLICY PACK</text>
+  <text x="68" y="178" fill="#c9d7e8" font-family="ui-sans-serif,system-ui" font-size="14">YAML rules</text>
+  <text x="68" y="200" fill="#8aa0b8" font-family="ui-sans-serif,system-ui" font-size="12">matchers · actions</text>
+  <text x="68" y="222" fill="#8aa0b8" font-family="ui-sans-serif,system-ui" font-size="12">safety precedence</text>
+  <rect x="320" y="110" width="220" height="220" rx="16" fill="#121a2b" stroke="#2a3b55"/>
+  <text x="340" y="148" fill="#7dd3c0" font-family="ui-monospace,monospace" font-size="13">02  EVALUATOR</text>
+  <text x="340" y="178" fill="#c9d7e8" font-family="ui-sans-serif,system-ui" font-size="14">Deterministic engine</text>
+    <text x="340" y="200" fill="#8aa0b8" font-family="ui-sans-serif,system-ui" font-size="12">fixture / message JSON</text>
+    <text x="340" y="222" fill="#8aa0b8" font-family="ui-sans-serif,system-ui" font-size="12">attention-cost score</text>
+    <rect x="592" y="110" width="280" height="220" rx="16" fill="#121a2b" stroke="#2a3b55"/>
+    <text x="612" y="148" fill="#7dd3c0" font-family="ui-monospace,monospace" font-size="13">03  ACTIONS</text>
+    <rect x="612" y="170" width="240" height="36" rx="8" fill="#163528"/>
+    <text x="628" y="193" fill="#9AE6B4" font-family="ui-sans-serif,system-ui" font-size="13">keep</text>
+    <rect x="612" y="216" width="240" height="36" rx="8" fill="#1a2740"/>
+    <text x="628" y="239" fill="#93C5FD" font-family="ui-sans-serif,system-ui" font-size="13">archive</text>
+    <rect x="612" y="262" width="240" height="36" rx="8" fill="#3b1d2a"/>
+    <text x="628" y="285" fill="#FCA5A5" font-family="ui-sans-serif,system-ui" font-size="13">delete-candidate · blocked if sacred</text>
+    <path d="M268 220 H320" stroke="#3d516e" stroke-width="2" marker-end="url(#a)"/>
+    <path d="M540 220 H592" stroke="#3d516e" stroke-width="2"/>
+    <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3d516e"/></marker></defs>
+    <text x="48" y="380" fill="#fbbf24" font-family="ui-sans-serif,system-ui" font-size="13">Sacred rail: invoices / orders / tickets / banking / security mail never become delete-candidate.</text>
+</svg>
