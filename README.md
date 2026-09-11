@@ -1,6 +1,6 @@
 # klarpost
 
-<img src="docs/assets/klarpost-mark.svg" width="56" height="56" alt="klarpost mark: a document standing on a safety rail" />
+<img src="docs/assets/klarpost-mark.png" width="56" height="56" alt="klarpost mark: a document standing on a safety rail" />
 
 **Deterministic policy-as-code for inbox attention.**
 YAML in. Named actions out. Protected mail cannot become a delete suggestion.
@@ -22,13 +22,13 @@ ADHD and high-sensory-load are honest constraints for the design, not a universa
 
 ## Architecture
 
-![klarpost architecture](docs/assets/architecture.svg)
+![klarpost architecture](docs/assets/architecture.png)
 
-![Fixture to match to choose to veto to receipt](docs/assets/evaluation.svg)
+![Fixture to match to choose to veto to receipt](docs/assets/evaluation.png)
 
 A pack is YAML a tired person can diff. The engine is the part they cannot turn off: **notice → name → choose → explain → veto**.
 
-![Action ladder: file, archive, keep, delete_candidate](docs/assets/action-ladder.svg)
+![Action ladder: file, archive, keep, delete_candidate](docs/assets/action-ladder.png)
 
 `ablegen` is the file action (German for putting documents away). It is a schema token, not UI copy. Priority is `ablegen` > `archive` > `keep` > `delete_candidate`.
 
@@ -100,6 +100,7 @@ klarpost validate -p policies/packs/<pack>.yaml
 | `src/klarpost/` | Evaluator, safety rails, attention cost, fixtures-only CLI |
 | `policies/packs/` | Sample packs (`protected-only`, `receipts-first`, `inbox-calm`) |
 | `fixtures/` | Synthetic mail (`example.com` only) |
+| `docs/assets/` | Diagrams: SVG source, PNG embeds for GitHub (mobile-safe) |
 | [AGENTS.md](AGENTS.md) | Maintainer contract for humans and coding agents |
 | [DESIGN.md](DESIGN.md) | Why the boundary looks like this |
 | [SECURITY.md](SECURITY.md) | Policy-bypass is a vulnerability class |

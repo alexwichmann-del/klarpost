@@ -11,6 +11,7 @@ The maintainer contract — including the Codex/agent checklist — is [AGENTS.m
 3. **Safety rails are not optional.** Do not weaken `HARD_PROTECTED_CATEGORIES` or skip `tests/test_safety.py`.
 4. **`delete_candidate` is not delete.** Copy and tests should say so.
 5. **English first.** Docs, issue/PR text, CLI help, rule `reason` strings, and comments are English. Matcher keywords may include other locales. `ablegen` stays as the file token.
+6. **README diagrams are PNG.** SVGs in `docs/assets/` are the source. GitHub mobile dropped some SVGs (invalid Latin-1 `·` bytes / sanitizer). After editing an SVG, run `docs/assets/render-png.sh` and keep the README pointing at the `.png`.
 
 ## Dev setup
 
